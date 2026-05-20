@@ -42,14 +42,37 @@ def fetch_maxitem(pretty: bool = False) -> int:
     return resp
 
 
+def fetch_top_stories(pretty: bool = False) -> list: 
+    '''Fetching the top 500 stories through /topstories endpoint 
+
+    Returns: 
+        list(int) - List of IDs
+    '''
+
+    params = {}
+    if pretty: 
+        params['print'] = 'pretty'
+    
+    resp = get(BASE_URL + '/topstories.json', params=params)
+    return resp
+
+
 def main():
     
-    print(f"Fetching HackerNews Current ({datetime.now().isoformat()}) Max Item...")
-    maxitem_id = fetch_maxitem()
-    print(f"Max Item ID: {maxitem_id}")
-    print(f"Fetching the details for {maxitem_id}...")
-    data = fetch_item(maxitem_id)
-    print(f"data: {json.dumps(data, indent=4)}")
+    # print(f"Fetching HackerNews Current ({datetime.now().isoformat()}) Max Item...")
+    # maxitem_id = fetch_maxitem()
+    # print(f"Max Item ID: {maxitem_id}")
+
+    print(f"Fetching top stories ({datetime.now().isoformat()})...")
+    ids = fetch_top_stories()
+    print(f"IDs fetched: {ids[:5]}")
+    print()
+    
+    for id in ids[:5]: 
+        print(f"Fetching the details for {id}...")
+        data = fetch_item(id)
+        print(f"data: {json.dumps(data, indent=4)}")
+        print()
 
 
 if __name__ == "__main__":
