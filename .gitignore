@@ -8,3 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Sample Data
+sample_story.txt

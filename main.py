@@ -1,8 +1,18 @@
 import requests
 from datetime import datetime
 import json
+from collections import deque
 
 BASE_URL = 'https://hacker-news.firebaseio.com/v0'
+
+
+class Node: 
+    id: int 
+    author: str
+    kids: list
+    score: int
+    time: int
+    type: str
 
 
 def get(url: str, params: dict = {}) -> dict: 
@@ -55,6 +65,14 @@ def fetch_top_stories(pretty: bool = False) -> list:
     
     resp = get(BASE_URL + '/topstories.json', params=params)
     return resp
+
+
+def walk_thread(start_ids: list(int)): 
+    '''Traverse function - walking each node and their corresponding kids
+    '''
+    pass
+
+
 
 
 def main():
