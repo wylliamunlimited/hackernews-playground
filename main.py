@@ -1,6 +1,5 @@
 import requests
 from datetime import datetime
-import json
 import time
 from collections import deque
 
