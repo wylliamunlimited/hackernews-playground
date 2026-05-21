@@ -1,16 +1,24 @@
 import requests
 from datetime import datetime
 import json
+import time
 from collections import deque
 
 BASE_URL = 'https://hacker-news.firebaseio.com/v0'
 
 
-def get(url: str, params: dict = {}) -> dict: 
+def get(url: str, params=None, retry_attempt: int = 3) -> dict: 
     '''Get request helper function'''
-    resp = requests.get(url, params=params)
-    resp.raise_for_status()
-    return resp.json()
+    for i in range(retry_attempt):
+        try:
+            resp = requests.get(url, params=params)
+            resp.raise_for_status()
+            return resp.json()
+        except requests.exceptions.RequestException as e: 
+            if i == retry_attempt - 1:
+                raise
+            time.sleep(2 ** i)
+            
 
 
 def fetch_item(id: str, pretty: bool = False) -> dict: 
@@ -77,6 +85,7 @@ def longest_comment(story_id: int):
         max_depth = max(depth, max_depth)
 
         data = fetch_item(item_id)
+
         if data:
             for kid in data.get('kids', []):
                 q.append((kid, depth + 1))
@@ -95,12 +104,11 @@ def longest_comment_dfs(story_id: int):
         max_depth = max(depth, max_depth)
 
         item_data = fetch_item(item_id)
+
         if item_data:
             for kid in item_data.get('kids', []):
                 stack.append((kid, depth + 1))
     return max_depth
-
-
 
 
 def main():
