@@ -72,6 +72,26 @@ def walk_thread(start_ids: list[int]):
     pass
 
 
+def deepest_reply_chain(item_id: int):
+    '''Traverse function - getting the longest comment thread
+    '''
+    
+    item_data = fetch_item(item_id)
+    if not item_data:
+        return []
+    
+    kids = item_data.get('kids', [])
+    if not kids:
+        return [item_id]
+
+    best_child_chain = max(
+        (deepest_reply_chain(kid) for kid in kids),
+        key=len
+    )
+
+    return [item_id] + best_child_chain
+    
+
 def longest_comment(story_id: int): 
     '''Traverse function - getting the longest comment thread
     '''
@@ -132,6 +152,10 @@ def main():
     print(f"Fetching the deepest comment depth for {ids[4]} - {item_data.get('title')}...")
     depth, depth_dfs = longest_comment(ids[4]), longest_comment_dfs(story_id=ids[4])
     print(f"For Story {ids[4]} - Deepest Comment at depth = {depth} [BFS] vs {depth_dfs} [DFS]")
+
+    print(f"Finding the deepest child thread for {ids[4]}...")
+    deepest_chain = deepest_reply_chain(ids[4])
+    print(f"Chain: {deepest_chain}")
 
 
 
