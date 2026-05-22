@@ -158,6 +158,7 @@ def main():
     print()
     item_data = fetch_item(ids[4])
     
+    # Fetch Details
     # for id in ids[:5]: 
     #     print(f"Fetching the details for {id}...")
     #     data = fetch_item(id)
