@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 import time
-from collections import deque
+from collections import defaultdict, deque
 
 BASE_URL = 'https://hacker-news.firebaseio.com/v0'
 
@@ -65,10 +65,24 @@ def fetch_top_stories(pretty: bool = False) -> list:
     return resp
 
 
-def walk_thread(start_ids: list[int]): 
+def count_comments(story_ids: list[int]) -> dict:
     '''Traverse function - walking each node and their corresponding kids
     '''
-    pass
+    counter = defaultdict(int)
+
+    for id in story_ids:
+        print(f"Walking story {id}...")
+        q = deque([id])
+        counter[id] = -1
+
+        while q:
+            item_id = q.pop()
+            counter[id] += 1
+            data = fetch_item(id=item_id) # API Call
+            for kid in data.get('kids', []):
+                q.append(kid)
+        
+    return counter
 
 
 def deepest_reply_chain(item_id: int):
@@ -129,9 +143,11 @@ def longest_comment_dfs(story_id: int):
                 stack.append((kid, depth + 1))
     return max_depth
 
+    
 
 def main():
     
+    # Fetch Max Item
     # print(f"Fetching HackerNews Current ({datetime.now().isoformat()}) Max Item...")
     # maxitem_id = fetch_maxitem()
     # print(f"Max Item ID: {maxitem_id}")
@@ -156,6 +172,12 @@ def main():
     deepest_chain = deepest_reply_chain(ids[4])
     print(f"Chain: {deepest_chain}")
 
+    # Count Comments
+    counter = count_comments(ids[:10])
+    print()
+    for k, v in counter.items():
+        print(f"Item {k} ==> {v} comments")
+    print()
 
 
 if __name__ == "__main__":
